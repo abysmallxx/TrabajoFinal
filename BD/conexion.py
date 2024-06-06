@@ -225,7 +225,7 @@ class DAO():
                 self.conexion.commit()
                 print(f"¡Registro en la tabla {tabla} actualizado!\n")
             except Error as ex:
-                print("Error al intentar la conexión: {0}".format(ex))
+                print(f"Error al intentar la conexión: {ex}")
             finally:
                 cursor.close()
     

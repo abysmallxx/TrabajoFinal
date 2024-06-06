@@ -117,16 +117,19 @@ def ejecutarOpcion_Medicamentos(opcion):
 
     elif opcion == 2:
         # Opción para actualizar información
-        numero_lote = input("Ingrese el número de lote del medicamento a actualizar: ")
-        # Crear la condición de búsqueda basada en el número de lote
-        condicion = f"lote = '{numero_lote}'"
-        medicamento = dao.buscar(tabla, condicion)  # Buscar el medicamento por número de lote
         try:
-            if len(medicamento)!= 0:
+            numero_lote = input("Ingrese el número de lote del medicamento a actualizar: ")
+            # Crear la condición de búsqueda basada en el número de lote
+            condicion = f"lote = '{numero_lote}'"
+            medicamento = dao.buscar(tabla, condicion)  # Buscar el medicamento por número de lote
+            if len(medicamento)> 0:
                 # Si se encontró el medicamento, pedir datos para actualizar
+                datos_medicamento= {}
                 datos = pedirDatosMedicamentos()
+                datos_medicamento.update(datos)
                 # Actualizar la ubicación utilizando los datos ingresados
-                dao.actualizar(tabla, condicion, datos)
+                print('Datos recogidos: ', datos_medicamento)
+                dao.actualizar(tabla, datos_medicamento, condicion)
                 print("Medicamento actualizado correctamente")
             else:
                 print("No se encontró ningún medicamento con ese número de lote.")
@@ -199,9 +202,12 @@ def ejecutarOpcion_Proveedores(opcion):
             proveedores = dao.buscar(tabla, condicion)  # Buscar el proveedor por código
             if len(proveedores) > 0:
                 # Si se encontró el proveedor, pedir datos para actualizar
+                datos_proveedor= {}
                 datos = pedirDatosProveedores()
+                datos_proveedor.update(datos)
+                print('Datos obtenidos: ', datos_proveedor)
                 # Actualizar el proveedor utilizando los datos ingresados
-                dao.actualizar(tabla, condicion, datos)
+                dao.actualizar(tabla, datos_proveedor, condicion)
                 print("Proveedor actualizado correctamente")
             else:
                 print("No se encontró ningún proveedor con ese código.")
@@ -271,9 +277,12 @@ def ejecutarOpcion_Ubicaciones(opcion):
             ubicaciones = dao.buscar(tabla, condicion)  # Buscar la ubicación por código
             if len(ubicaciones) > 0:
                 # Si se encontró la ubicación, pedir datos para actualizar
+                datos_ubicacion={}
                 datos = pedirDatosUbicaciones()
+                datos_ubicacion.update(datos)
+                print('Datos recogidos: ', datos_ubicacion)
                 # Actualizar la ubicación utilizando los datos ingresados
-                dao.actualizar(tabla, condicion, datos)
+                dao.actualizar(tabla,  datos_ubicacion, condicion)
                 print("Ubicación actualizada correctamente")
             else:
                 print("No se encontró ninguna ubicación con ese código.")
