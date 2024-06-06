@@ -4,7 +4,6 @@ from tkinter import messagebox
 from principal import menuPrincipal
 # Importa las funciones de cargar_datos.py
 from BD.cargar_datos import cargar_proveedores, cargar_ubicaciones, cargar_medicamentos
-
 from BD.conexion import DAO
 
 # Función para autenticar al usuario
@@ -24,7 +23,8 @@ def autenticar():
         dao.__init__()
         #Crea las tablas 
         dao.crear_tablas()
-        #Luego de que la seccion se haya ingresado correctamente y se hayan creado las tablas, el codigo cargara los datos de las  tablas y abrirá el menu principal
+        #Luego de que la seccion se haya ingresado correctamente y se hayan creado las tablas, 
+        #el codigo cargara los datos de las  tablas y abrirá el menu principal
         cargar_proveedores()
         cargar_ubicaciones()
         cargar_medicamentos()
@@ -52,7 +52,8 @@ def crear_ventana_inicio_sesion():
     # background para el color de fondo, foreground para el color de letra
     ventana.config(bg="black")
 
-    # Cambiar el icono de la ventana, asegúrate de que udea.ico está en el mismo directorio.Debe tener descargada una imagen con extension .ico
+    # Cambiar el icono de la ventana, asegúrate de que udea.ico está en el mismo directorio.
+    #Debe tener descargada una imagen con extension .ico
     # si no esta en .ico se debe convertir, en la red lo puedes hacer automaticamente 
     try:
         ventana.iconbitmap("udea.ico")

@@ -62,26 +62,7 @@ class DAO():
 
 
     def crear_tablas(self):
-        """
-        La función crear_tablas se encarga de gestionar la creación de las tablas en la base de datos cuando la conexión está activa.
-        Primero, verifica si la conexión está activa; de lo contrario, no tendría sentido intentar crear las tablas. 
-
-        Luego, utiliza una estructura try-except para manejar cualquier error que pueda ocurrir durante la creación de las tablas, 
-        imprimiendo un mensaje de error si es necesario.
         
-        Dentro de la función crear_tablas, se definen tres funciones internas (create_table_medicamentos, create_table_proveedores y create_table_ubicaciones), 
-        cada una diseñada para crear una tabla específica. Esto ayuda a modularizar el código y facilitar su mantenimiento.
-        
-        La función crea un cursor para ejecutar consultas SQL en la base de datos y ejecuta las consultas correspondientes para crear las tablas de medicamentos, proveedores y ubicaciones. 
-        
-        Después de ejecutar cada consulta, se realiza la confirmación de los cambios en la base de datos para que las tablas se creen de manera permanente.
-        
-        Se imprime un mensaje indicando que la tabla se creó con éxito para proporcionar retroalimentación al usuario o al desarrollador sobre el estado de la operación. 
-        Se itera sobre los datos devueltos por el cursor,(en este caso no se están utilizando) . Finalmente, se cierra el cursor después de ejecutar la consulta para liberar los recursos.
-        
-        Las últimas líneas llaman a las funciones internas para crear las tablas respectivas de medicamentos, proveedores y ubicaciones, lo que inicia el proceso de creación de las tablas al llamar a la función crear_tablas.
-
-        """
         if self.conexion is not None and self.conexion.is_connected():
             try:
                 def create_table_proveedores():
@@ -155,9 +136,47 @@ class DAO():
 
         else: print("No se puede crear las tablas porque no hay conexión establecida.")
 
+        """
+        La función crear_tablas se encarga de gestionar la creación de las tablas en la base de datos cuando la conexión está activa.
+        Primero, verifica si la conexión está activa; de lo contrario, no tendría sentido intentar crear las tablas. 
+
+        Luego, utiliza una estructura try-except para manejar cualquier error que pueda ocurrir durante la creación de las tablas, 
+        imprimiendo un mensaje de error si es necesario.
+        
+        Dentro de la función crear_tablas, se definen tres funciones internas (create_table_medicamentos, create_table_proveedores y create_table_ubicaciones), 
+        cada una diseñada para crear una tabla específica. Esto ayuda a modularizar el código y facilitar su mantenimiento.
+        
+        La función crea un cursor para ejecutar consultas SQL en la base de datos y ejecuta las consultas correspondientes para crear las tablas de medicamentos, proveedores y ubicaciones. 
+        
+        Después de ejecutar cada consulta, se realiza la confirmación de los cambios en la base de datos para que las tablas se creen de manera permanente.
+        
+        Se imprime un mensaje indicando que la tabla se creó con éxito para proporcionar retroalimentación al usuario o al desarrollador sobre el estado de la operación. 
+        Se itera sobre los datos devueltos por el cursor,(en este caso no se están utilizando) . Finalmente, se cierra el cursor después de ejecutar la consulta para liberar los recursos.
+        
+        Las últimas líneas llaman a las funciones internas para crear las tablas respectivas de medicamentos, proveedores y ubicaciones, lo que inicia el proceso de creación de las tablas al llamar a la función crear_tablas.
+
+        """
+
 
     def ingresar(self, tabla, datos):
-        """
+        
+        # Opción 1
+        if self.conexion.is_connected():
+            try:
+                cursor = self.conexion.cursor()
+                columnas = ', '.join(datos.keys())
+                valores = ', '.join(['%s'] * len(datos))
+                sql = f"INSERT INTO {tabla} ({columnas}) VALUES ({valores})"
+                print(f"SQL: {sql}")
+                print(f"Datos: {list(datos.values())}")
+                cursor.execute(sql, list(datos.values()))
+                self.conexion.commit()
+                print(f"¡Registro añadido a la tabla {tabla}!\n")
+            except Error as ex:
+                print("Error al intentar la conexión: {0}".format(ex))
+            finally:
+                cursor.close()
+                """
         La función ingresar se encarga de agregar nuevos registros a una tabla específica en la base de datos.
         
         Toma tres argumentos: self, que se refiere a la instancia de la clase en la que se define la función; 
@@ -180,38 +199,9 @@ class DAO():
         En caso de que ocurra un error durante el proceso, se imprime un mensaje de error.
        
          """
-        # Opción 1
-        if self.conexion.is_connected():
-            try:
-                cursor = self.conexion.cursor()
-                columnas = ', '.join(datos.keys())
-                valores = ', '.join(['%s'] * len(datos))
-                sql = f"INSERT INTO {tabla} ({columnas}) VALUES ({valores})"
-                print(f"SQL: {sql}")
-                print(f"Datos: {list(datos.values())}")
-                cursor.execute(sql, list(datos.values()))
-                self.conexion.commit()
-                print(f"¡Registro añadido a la tabla {tabla}!\n")
-            except Error as ex:
-                print("Error al intentar la conexión: {0}".format(ex))
-            finally:
-                cursor.close()
     
     def actualizar(self, tabla, datos, condicion):
-        """
-        La función actualizarRegistro se encarga de actualizar registros en una tabla específica. 
-        Recibe varios argumentos: self, que hace referencia a la instancia actual de la clase; 
-        tabla, una cadena que especifica la tabla en la que se actualizarán los registros; 
-        datos, un diccionario con los nuevos valores para la actualización; 
-        y condicion, una cadena que establece la condición que deben cumplir los registros a actualizar.
         
-        Primero, se verifica si la conexión a la base de datos está activa. Luego, construye dinámicamente
-        la consulta SQL de actualización utilizando los datos proporcionados, especialmente las claves y valores del diccionario datos. 
-        Se crea un cursor para ejecutar la consulta SQL, se ejecuta la consulta con los valores proporcionados y se confirman los cambios en la DB.
-        Si la actualización se realiza con éxito, se imprime un mensaje indicando que el registro en la tabla especificada ha sido actualizado. 
-        Sin embargo, si ocurre algún error durante el proceso, se imprime un mensaje de error que describe la naturaleza del problema.
-
-        """
         # Opción 2
         
         if self.conexion.is_connected():
@@ -228,10 +218,52 @@ class DAO():
                 print(f"Error al intentar la conexión: {ex}")
             finally:
                 cursor.close()
+                """
+        La función actualizarRegistro se encarga de actualizar registros en una tabla específica. 
+        Recibe varios argumentos: self, que hace referencia a la instancia actual de la clase; 
+        tabla, una cadena que especifica la tabla en la que se actualizarán los registros; 
+        datos, un diccionario con los nuevos valores para la actualización; 
+        y condicion, una cadena que establece la condición que deben cumplir los registros a actualizar.
+        
+        Primero, se verifica si la conexión a la base de datos está activa. Luego, construye dinámicamente
+        la consulta SQL de actualización utilizando los datos proporcionados, especialmente las claves y valores del diccionario datos. 
+        Se crea un cursor para ejecutar la consulta SQL, se ejecuta la consulta con los valores proporcionados y se confirman los cambios en la DB.
+        Si la actualización se realiza con éxito, se imprime un mensaje indicando que el registro en la tabla especificada ha sido actualizado. 
+        Sin embargo, si ocurre algún error durante el proceso, se imprime un mensaje de error que describe la naturaleza del problema.
+
+        """
     
     
     def buscar(self, tabla, condicion):
-        """
+        
+
+        # Opcion 3
+        if self.conexion.is_connected():
+            try:
+                cursor = self.conexion.cursor()
+                consulta = f"SELECT * FROM {tabla} WHERE {condicion}"
+                cursor.execute(consulta)
+                resultados = cursor.fetchall()
+    
+                # Imprimir los resultados de manera formateada
+                print(f"\nResultados de la búsqueda en la tabla '{tabla}':\n")
+                contador = 1
+                for resultado in resultados:
+                    if tabla == 'medicamentos':
+                        datos ="{0}. Lote: {1} | Nombre del medicamento: {2} | Código del distribuidor: {3} | Cantidad en bodega: {4} | Fecha de llegada: {5} | Precio de venta: {6} | Código de la ubicación {7}"
+                        print(datos.format(contador, resultado[0], resultado[1], resultado[2], resultado[3], resultado[4], resultado[5], resultado[6]))
+                    elif tabla == 'proveedores':
+                        datos = "{0}. Código del proveedor: {1} | Nombre: {2} | Apellido: {3} | Numero de identificación: {4} | Entidad: {5}"
+                        print(datos.format(contador, resultado[0], resultado[1], resultado[2], resultado[3], resultado[4]))
+                    elif tabla == 'ubicaciones':
+                        datos = "{0}. Código de la ubicación: {1} | Nombre: {2} | Telefono: {3}"
+                        print(datos.format(contador, resultado[0], resultado[1], resultado[2]))
+                    contador += 1
+                
+                return resultados
+            except Error as ex:
+                print("Error al intentar la conexión: {0}".format(ex))
+    """
         Se utiliza para realizar consultas en una tabla específica de la base de datos. 
         
         Qué hace cada parte del código:
@@ -260,70 +292,9 @@ class DAO():
         
         Manejo de errores: Si ocurre algún error durante el proceso de búsqueda, se captura en el bloque except y se imprime un mensaje de error. Esto ayuda a identificar y diagnosticar cualquier problema que pueda surgir durante la ejecución de la consulta.
         """
-
-        # Opcion 3
-        if self.conexion.is_connected():
-            try:
-                cursor = self.conexion.cursor()
-                consulta = f"SELECT * FROM {tabla} WHERE {condicion}"
-                cursor.execute(consulta)
-                resultados = cursor.fetchall()
-    
-                # Imprimir los resultados de manera formateada
-                print(f"\nResultados de la búsqueda en la tabla '{tabla}':\n")
-                contador = 1
-                for resultado in resultados:
-                    if tabla == 'medicamentos':
-                        datos ="{0}. Lote: {1} | Nombre del medicamento: {2} | Código del distribuidor: {3} | Cantidad en bodega: {4} | Fecha de llegada: {5} | Precio de venta: {6} | Código de la ubicación {7}"
-                        print(datos.format(contador, resultado[0], resultado[1], resultado[2], resultado[3], resultado[4], resultado[5], resultado[6]))
-                    elif tabla == 'proveedores':
-                        datos = "{0}. Código del proveedor: {1} | Nombre: {2} | Apellido: {3} | Numero de identificación: {4} | Entidad: {5}"
-                        print(datos.format(contador, resultado[0], resultado[1], resultado[2], resultado[3], resultado[4]))
-                    elif tabla == 'ubicaciones':
-                        datos = "{0}. Código de la ubicación: {1} | Nombre: {2} | Telefono: {3}"
-                        print(datos.format(contador, resultado[0], resultado[1], resultado[2]))
-                    contador += 1
-                
-                return resultados
-            except Error as ex:
-                print("Error al intentar la conexión: {0}".format(ex))
-    
         
     def listar(self, tabla):
-        """
-        Verificación de Conexión:
-
-        La función primero verifica si hay una conexión activa a la base de datos usando self.conexion.is_connected(). 
-        Esto asegura que la función solo intentará realizar la operación si hay una conexión establecida.
-
-        Creación del Cursor:        
-        Si la conexión está activa, se crea un cursor con cursor = self.conexion.cursor(). 
-
-        Selección de Columna de Ordenamiento:
-        La función selecciona una columna para ordenar los resultados en función de la tabla especificada en el parámetro tabla:
-        Para la tabla medicamentos, se usa la columna nombre_del_medicamento.
-        Para la tabla proveedores, se usa la columna nombre.
-        Para la tabla ubicaciones, se usa la columna nombre.
-        Si la tabla no es reconocida, se imprime un mensaje de error y la función termina.
-
-        Construcción y Ejecución de la Consulta SQL:        
-        Se construye una consulta SQL para seleccionar todos los registros de la tabla y ordenarlos por la columna especificada: 
-        consulta = f"SELECT * FROM {tabla} ORDER BY {orden} ASC".
-        La consulta se ejecuta con cursor.execute(consulta) y los resultados se obtienen usando cursor.fetchall(), 
-        que devuelve todos los registros obtenidos por la consulta.
         
-        Impresión de Resultados:        
-        Se imprime un encabezado indicando de qué tabla se están mostrando los resultados: print(f"\nResultados de la tabla '{tabla}':\n").
-        Se inicializa un contador para numerar los registros.
-        Se itera sobre los resultados usando un bucle for. Dependiendo de la tabla, se formatea e imprime cada registro de manera organizada:
-        Para la tabla medicamentos, se imprime el lote, nombre del medicamento, distribuidor, cantidad en bodega, fecha de llegada, precio de venta, código del proveedor y código de ubicaciones.
-        Para la tabla proveedores, se imprime el código, nombre, apellido, documento de identidad y entidad.
-        Para la tabla ubicaciones, se imprime el código, nombre y teléfono.
-        El contador se incrementa con cada registro.
-
-        Manejo de Errores:        
-        Si ocurre algún error durante la ejecución de la consulta, se captura con un bloque except y se imprime un mensaje de error con los detalles.
-        """
         # Opcion 4
         if self.conexion.is_connected():
             try:
@@ -361,20 +332,44 @@ class DAO():
                 return resultados
             except Error as ex:
                 print("Error al intentar la conexión: {0}".format(ex))
+                """
+        Verificación de Conexión:
+
+        La función primero verifica si hay una conexión activa a la base de datos usando self.conexion.is_connected(). 
+        Esto asegura que la función solo intentará realizar la operación si hay una conexión establecida.
+
+        Creación del Cursor:        
+        Si la conexión está activa, se crea un cursor con cursor = self.conexion.cursor(). 
+
+        Selección de Columna de Ordenamiento:
+        La función selecciona una columna para ordenar los resultados en función de la tabla especificada en el parámetro tabla:
+        Para la tabla medicamentos, se usa la columna nombre_del_medicamento.
+        Para la tabla proveedores, se usa la columna nombre.
+        Para la tabla ubicaciones, se usa la columna nombre.
+        Si la tabla no es reconocida, se imprime un mensaje de error y la función termina.
+
+        Construcción y Ejecución de la Consulta SQL:        
+        Se construye una consulta SQL para seleccionar todos los registros de la tabla y ordenarlos por la columna especificada: 
+        consulta = f"SELECT * FROM {tabla} ORDER BY {orden} ASC".
+        La consulta se ejecuta con cursor.execute(consulta) y los resultados se obtienen usando cursor.fetchall(), 
+        que devuelve todos los registros obtenidos por la consulta.
+        
+        Impresión de Resultados:        
+        Se imprime un encabezado indicando de qué tabla se están mostrando los resultados: print(f"\nResultados de la tabla '{tabla}':\n").
+        Se inicializa un contador para numerar los registros.
+        Se itera sobre los resultados usando un bucle for. Dependiendo de la tabla, se formatea e imprime cada registro de manera organizada:
+        Para la tabla medicamentos, se imprime el lote, nombre del medicamento, distribuidor, cantidad en bodega, fecha de llegada, precio de venta, código del proveedor y código de ubicaciones.
+        Para la tabla proveedores, se imprime el código, nombre, apellido, documento de identidad y entidad.
+        Para la tabla ubicaciones, se imprime el código, nombre y teléfono.
+        El contador se incrementa con cada registro.
+
+        Manejo de Errores:        
+        Si ocurre algún error durante la ejecución de la consulta, se captura con un bloque except y se imprime un mensaje de error con los detalles.
+        """
 
 
     def eliminar(self, tabla, condicion):
-        """
-        Verificación de conexión: La función verifica si hay una conexión establecida antes de intentar ejecutar la eliminación. 
-        Esto asegura que no se realice ninguna operación si la conexión no está activa.
-
-        Ejecución de la consulta SQL: Construye dinámicamente una consulta SQL de eliminación utilizando la tabla y la condición proporcionadas. 
-        Luego, ejecuta la consulta utilizando el cursor.
         
-        Confirmación de la transacción: Después de ejecutar la consulta, se confirma la transacción para aplicar los cambios permanentemente en la base de datos.
-        
-        Mensaje de confirmación: Si la eliminación se realiza correctamente, se imprime un mensaje indicando que el registro se eliminó de la tabla especificada.
-        """
         #Opcion 5
         if self.conexion.is_connected():
             try:
@@ -388,3 +383,14 @@ class DAO():
                 print("Error al intentar la conexión: {0}".format(ex))
             finally:
                 cursor.close()
+                """
+        Verificación de conexión: La función verifica si hay una conexión establecida antes de intentar ejecutar la eliminación. 
+        Esto asegura que no se realice ninguna operación si la conexión no está activa.
+
+        Ejecución de la consulta SQL: Construye dinámicamente una consulta SQL de eliminación utilizando la tabla y la condición proporcionadas. 
+        Luego, ejecuta la consulta utilizando el cursor.
+        
+        Confirmación de la transacción: Después de ejecutar la consulta, se confirma la transacción para aplicar los cambios permanentemente en la base de datos.
+        
+        Mensaje de confirmación: Si la eliminación se realiza correctamente, se imprime un mensaje indicando que el registro se eliminó de la tabla especificada.
+        """

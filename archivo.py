@@ -59,7 +59,14 @@ def pedirDatosMedicamentos():
             print("Precio incorrecto: Debe ser un número.")
 
     # Crear el diccionario con los datos del medicamento y devolverla
-    medicamento = { 'lote': lote, 'nombre': nombre_med, 'distribuidor': distribuidor, 'cantidad': cantidad, 'fecha': fecha_llegada, 'precio': precio_venta, 'ubicacion': codigo}
+    medicamento = { 'lote': lote, 
+                   'nombre': nombre_med, 
+                   'distribuidor': distribuidor, 
+                   'cantidad': cantidad, 
+                   'fecha': fecha_llegada, 
+                   'precio': precio_venta, 
+                   'ubicacion': codigo
+                   }
     return medicamento
 
 def pedirDatosProveedores():

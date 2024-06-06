@@ -322,12 +322,9 @@ def ejecutarOpcion_Ubicaciones(opcion):
                 print("No se encontraron ubicaciones para eliminar.")
         except Exception as e:
             print("Error al intentar eliminar ubicaciones:", e)
-     
-
     elif opcion == 6:
         # Opción para volver al menú principal
         menuPrincipal()
-
     else:
         print("Opción no válida...")
 
