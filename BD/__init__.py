@@ -1,0 +1,1 @@
+#Carpeta vacia __init__.py que le indica a python que la carpeta BD es un paquete y puede contener modulos
